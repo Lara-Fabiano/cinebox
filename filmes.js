@@ -125,37 +125,23 @@ if (busca) {
     });
 }
 
-// ============
+// ==========================================
 // COMPARTILHAR 
-// ============
+// ==========================================
 
 const compartilharBtn = document.getElementById("compartilharBtn");
 
 if (compartilharBtn) {
     compartilharBtn.addEventListener("click", async function() {
-        const botoesDeletar = document.querySelectorAll(".btn-deletar");
-        const ids = [];
-
-        botoesDeletar.forEach(botao => {
-            const match = botao.getAttribute("onclick").match(/'([^']+)'/);
-            if (match && match[1]) {
-                ids.push(match[1]);
-            }
-        });
-
-        if (ids.length === 0) {
-            alert("Você não tem nenhuma avaliação para compartilhar ainda! 🎬");
-            return;
-        }
-
-        const listaIds = ids.join(",");
-        const linkCompartilhado = `${window.location.origin}/compartilhado.html?ids=${listaIds}`;
+        // Usamos o pathname para capturar a pasta correta do repositório no GitHub Pages automaticamente
+        const rascunhoPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        const linkCompartilhado = `${window.location.origin}${rascunhoPath}/compartilhado.html?user=${USUARIO_ID}`;
 
         try {
             await navigator.clipboard.writeText(linkCompartilhado);
-            alert("Link de visualização copiado com sucesso! Envie para seus amigos. 🔗");
+            alert("🔗 Link permanente copiado! Qualquer novo filme que você avaliar atualizará lá automaticamente.");
         } catch {
-            prompt("Copie seu link de visualização abaixo:", linkCompartilhado);
+            prompt("Copie seu link de visualização permanente abaixo:", linkCompartilhado);
         }
     });
 }
