@@ -1,0 +1,420 @@
+/* ==========================================================================
+   CONFIGURAÇÕES GERAIS E VARIÁVEIS
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-principal: #0b0b0c;
+    --bg-card: #16161a;
+    --bg-header: rgba(18, 18, 22, 0.8);
+    --cor-primaria: #ffcc00;
+    --cor-primaria-hover: #e6b800;
+    --texto-principal: #ffffff;
+    --texto-secundario: #94a3b8;
+    --borda: rgba(255, 255, 255, 0.08);
+    --sombra: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --transicao: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-principal);
+    color: var(--texto-principal);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   HEADER (LAYOUT GLASSMORPHISM)
+   ========================================================================== */
+.header {
+    background: var(--bg-header);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--borda);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(45deg, #ffffff, var(--cor-primaria));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+nav a {
+    color: var(--texto-secundario);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: var(--transicao);
+}
+
+nav a:hover {
+    color: var(--texto-principal);
+}
+
+/* ==========================================================================
+   BOTÕES E COMPONENTES DE INTERAÇÃO
+   ========================================================================== */
+button, .botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transicao);
+    text-decoration: none;
+}
+
+/* Botão Amarelo Principal */
+.botao, #btnInstalarEditor {
+    background-color: var(--cor-primaria);
+    color: #000000 !important;
+}
+
+.botao:hover, #btnInstalarEditor:hover {
+    background-color: var(--cor-primaria-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+}
+
+/* Botão Compartilhar */
+#compartilharBtn {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--texto-principal);
+    border: 1px solid var(--borda);
+}
+
+#compartilharBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Botão Visualizador (PWA Branco) */
+#btnInstalarVisualizador {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+#btnInstalarVisualizador:hover {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* Container de Instalação do PWA */
+.pwa-instalacao {
+    margin-bottom: 0 !important; /* Ajuste para alinhar perfeitamente no header */
+}
+
+/* ==========================================================================
+   LAYOUT E ESTRUTURA PRINCIPAL
+   ========================================================================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+}
+
+.topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    gap: 1.5rem;
+}
+
+.topo h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.topo p {
+    color: var(--texto-secundario);
+    font-size: 1rem;
+}
+
+/* Barra de Busca */
+.busca {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.busca input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    color: var(--texto-principal);
+    font-size: 1rem;
+    transition: var(--transicao);
+}
+
+.busca input:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
+    background-color: rgba(22, 22, 26, 0.7);
+}
+
+/* ==========================================================================
+   GRID DE FILMES E CARDS (DESIGN PREMIUM)
+   ========================================================================== */
+.filmes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem;
+}
+
+.filme-card {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--borda);
+    transition: var(--transicao);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.filme-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--sombra);
+}
+
+/* Poster de Filme */
+.filme-card img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--borda);
+    transition: var(--transicao);
+}
+
+.filme-card:hover img {
+    filter: brightness(1.05);
+}
+
+/* Conteúdo do Card */
+.filme-info {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.filme-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+    color: var(--texto-principal);
+}
+
+.filme-info p {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    margin-bottom: 0.75rem;
+}
+
+/* Badge de Nota Estilizada */
+.filme-info .nota {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    background: rgba(255, 204, 0, 0.1);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+}
+
+/* Balão de Comentário */
+.filme-info .comentario {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--cor-primaria);
+    margin-top: auto;
+    line-height: 1.5;
+}
+
+/* Container de Ações (Editar/Deletar) no Card */
+.filme-acoes {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    background-color: var(--bg-card);
+}
+
+.filme-acoes button {
+    padding: 0.5rem;
+    flex: 1;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--texto-secundario);
+    border: 1px solid var(--borda);
+}
+
+.filme-acoes .btn-editar:hover {
+    background: rgba(255, 204, 0, 0.15);
+    color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+}
+
+.filme-acoes .btn-deletar:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+/* ==========================================================================
+   MODAL DE EDIÇÃO MODERNO
+   ========================================================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-conteudo {
+    background-color: var(--bg-card);
+    border: 1px solid var(--borda);
+    padding: 2rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--sombra);
+    animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-conteudo h3 {
+    font-size: 1.35rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.modal-conteudo label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.modal-conteudo input, .modal-conteudo textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    transition: var(--transicao);
+}
+
+.modal-conteudo input:focus, .modal-conteudo textarea:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+}
+
+.modal-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.modal-acoes button {
+    background: transparent;
+    color: var(--texto-secundario);
+}
+
+.modal-acoes button:hover {
+    color: var(--texto-principal);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.modal-acoes .btn-salvar {
+    background-color: var(--cor-primaria);
+    color: #000000;
+}
+
+/* ==========================================================================
+   ANIMAÇÕES E RESPONSIVIDADE
+   ========================================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+    .topo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .topo .botao {
+        width: 100%;
+    }
+    .pwa-instalacao {
+        width: 100%;
+        justify-content: center;
+    }
+}

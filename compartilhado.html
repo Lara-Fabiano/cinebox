@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111111">
+    <link rel="stylesheet" href="style.css">
+    <title>CineBox - Avaliações Compartilhadas</title>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            🎬 CineBox
+        </div>
+
+        <div class="pwa-instalacao" style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button id="btnInstalarVisualizador" style="display: none; background: #ffffff; color: #111;">
+                📲 Baixar App
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="topo">
+            <div>
+                <h2>Lista Compartilhada</h2>
+                <p>Confira estas indicações de filmes!</p>
+            </div>
+        </section>
+
+        <!-- Container onde os filmes compartilhados vão aparecer -->
+        <section id="filmesCompartilhadosContainer" class="filmes-grid"></section>
+    </main>
+
+    <!-- Scripts do Supabase e o script exclusivo desta tela -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    
+    <script>
+        // ==========================================
+        // GERE ADICIONAL DE INSTALAÇÃO DO PWA
+        // ==========================================
+        let deferredPrompt;
+
+        const btnEditor = document.getElementById('btnInstalarEditor');
+        const btnVisualizador = document.getElementById('btnInstalarVisualizador');
+
+        function checkDisplayMode() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+            || window.navigator.standalone
+            || document.referrer.includes('android-app://');
+
+            if (isStandalone) {
+                if (btnEditor) btnEditor.style.display = 'none';
+                if (btnVisualizador) btnVisualizador.style.display = 'none';
+            } else {
+                // No navegador, força os botões a aparecerem para o usuário poder baixar
+                if (btnEditor) btnEditor.style.display = 'inline-block';
+                if (btnVisualizador) btnVisualizador.style.display = 'inline-block';
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            checkDisplayMode(); // Garante a exibição correta assim que o prompt estiver pronto
+        });
+
+        if (btnEditor) {
+            btnEditor.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                if (btnEditor) btnEditor.style.display = 'none';
+                if (btnVisualizador) btnVisualizador.style.display = 'none';
+            });
+        }
+
+        if (btnVisualizador) {
+            btnVisualizador.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                if (btnEditor) btnEditor.style.display = 'none';
+                if (btnVisualizador) btnVisualizador.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', checkDisplayMode);
+
+        // ==========================================
+        // CARREGAR FILMES COMPARTILHADOS
+        // ==========================================
+        async function carregarFilmesCompartilhados() {
+            const container = document.getElementById("filmesCompartilhadosContainer");
+            container.innerHTML = "<p>Carregando lista...</p>";
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const idsString = urlParams.get('ids');
+
+            if (!idsString) {
+                container.innerHTML = "<p>Nenhum filme compartilhado nesta lista.</p>";
+                return;
+            }
+
+            const listaIds = idsString.split(',');
+
+            const { data, error } = await supabaseClient
+                .from("avaliacoes")
+                .select(`
+                    id,
+                    nota,
+                    comentario,
+                    filmes (
+                        titulo,
+                        ano,
+                        poster_url
+                    )
+                `)
+                .in("id", listaIds);
+
+            if (error || !data.length) {
+                container.innerHTML = "<p>Erro ao carregar a lista ou os filmes não existem mais.</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            data.forEach(item => {
+                const filme = item.filmes;
+                if (!filme) return;
+
+                const poster = filme.poster_url || "https://via.placeholder.com/300x450?text=Sem+Poster";
+                const card = document.createElement("article");
+                card.className = "filme-card";
+
+                card.innerHTML = `
+                    <img src="${poster}" alt="${filme.titulo}">
+                    <div class="filme-info">
+                        <h3>${filme.titulo}</h3>
+                        <p>${filme.ano || ""}</p>
+                        <p class="nota">⭐ ${item.nota}</p>
+                        ${item.comentario ? `<p class="comentario">"${item.comentario}"</p>` : ""}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Executa o carregamento dos filmes
+        carregarFilmesCompartilhados();
+    </script>
+</body>
+</html>

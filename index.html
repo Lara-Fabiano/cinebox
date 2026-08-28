@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111111">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <title>CineBox</title>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            🎬 CineBox
+        </div>
+
+        <nav>
+            <a href="index.html">
+                Filmes
+            </a>
+
+            <button id="compartilharBtn">
+                🔗 Compartilhar
+            </button>
+
+            <!-- Cole este bloco onde desejar exibir os botões de instalação -->
+            <div class="pwa-instalacao" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <button id="btnInstalarEditor" style="display: none; background: #ffcc00; color: #111;">
+                    📲 Baixar App
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="topo">
+            <div>
+                <h2>
+                    Meus filmes
+                </h2>
+                <p>
+                    Seu diário cinematográfico
+                </p>
+            </div>
+
+            <a href="avaliar.html" class="botao">
+                + Avaliar filme
+            </a>
+        </section>
+
+        <div class="busca">
+            <input type="text" id="buscar" placeholder="🔍 Buscar filme...">
+        </div>
+
+        <section id="filmesContainer" class="filmes-grid"></section>
+
+    </main>
+
+    <div id="modalEditar" class="modal" style="display: none;">
+        <div class="modal-conteudo">
+            <h3>Editar Avaliação</h3>
+            <input type="hidden" id="editarFilmeId">
+            
+            <label for="editarNota">Nota (1 a 5 ⭐):</label>
+            <input type="number" id="editarNota" min="1" max="5">
+
+            <label for="editarComentario">Comentário:</label>
+            <textarea id="editarComentario" rows="3"></textarea>
+
+            <div class="modal-acoes">
+                <button type="button" onclick="fecharModalEditar()">Cancelar</button>
+                <button type="button" class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="filmes.js"></script>
+
+</body>
+</html>
