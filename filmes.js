@@ -126,9 +126,8 @@ if (busca) {
 }
 
 // ==========================================
-// COMPARTILHAR (Mantendo seu sistema de IDs, corrigido para o GitHub)
+// COMPARTILHAR (Versão Corrigida para manter o /cinebox/)
 // ==========================================
-
 const compartilharBtn = document.getElementById("compartilharBtn");
 
 if (compartilharBtn) {
@@ -151,17 +150,21 @@ if (compartilharBtn) {
 
         const listaIds = ids.join(",");
 
-        // CORREÇÃO DA URL PARA O GITHUB PAGES:
-        // Pega a URL da barra de endereço e limpa o "index.html" ou parâmetros antigos
-        let urlBase = window.location.href.split('?')[0];
-        if (urlBase.endsWith('index.html')) {
-            urlBase = urlBase.replace('index.html', '');
+        // CORREÇÃO DEFINITIVA DA URL:
+        // Captura o caminho atual (ex: /cinebox/ ou /cinebox/index.html)
+        let caminhoAtual = window.location.pathname;
+        
+        // Se terminar com index.html, remove apenas o index.html, mantendo a pasta /cinebox/
+        if (caminhoAtual.endsWith('index.html')) {
+            caminhoAtual = caminhoAtual.replace('index.html', '');
         }
-        if (!urlBase.endsWith('/')) {
-            urlBase += '/';
+        // Garante que termina com uma barra
+        if (!caminhoAtual.endsWith('/')) {
+            caminhoAtual += '/';
         }
 
-        const linkCompartilhado = `${urlBase}compartilhado.html?ids=${listaIds}`;
+        // Monta o link juntando o domínio original + a pasta correta + o arquivo
+        const linkCompartilhado = `${window.location.origin}${caminhoAtual}compartilhado.html?ids=${listaIds}`;
 
         try {
             await navigator.clipboard.writeText(linkCompartilhado);
