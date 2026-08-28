@@ -139,9 +139,9 @@ if (compartilharBtn) {
 
         try {
             await navigator.clipboard.writeText(linkCompartilhado);
-            alert("🔗 Link permanente copiado! Qualquer novo filme que você avaliar atualizará lá automaticamente.");
+            alert("🔗 Link copiado! Qualquer novo filme que você avaliar atualizará lá automaticamente.");
         } catch {
-            prompt("Copie seu link de visualização permanente abaixo:", linkCompartilhado);
+            prompt("Copie seu link de visualização abaixo:", linkCompartilhado);
         }
     });
 }
