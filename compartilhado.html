@@ -93,64 +93,88 @@
 
         window.addEventListener('DOMContentLoaded', checkDisplayMode);
 
-        // ==========================================
-        // CARREGAR FILMES COMPARTILHADOS
-        // ==========================================
-        async function carregarFilmesCompartilhados() {
-            const container = document.getElementById("filmesCompartilhadosContainer");
-            container.innerHTML = "<p>Carregando lista...</p>";
+      // ==========================================
+// CARREGAR FILMES COMPARTILHADOS (Versão Corrigida)
+// ==========================================
+async function carregarFilmesCompartilhados() {
+    const container = document.getElementById("filmesCompartilhadosContainer");
+    container.innerHTML = "<p>Carregando lista...</p>";
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const idsString = urlParams.get('ids');
+    const urlParams = new URLSearchParams(window.location.search);
+    const idsString = urlParams.get('ids');
 
-            if (!idsString) {
-                container.innerHTML = "<p>Nenhum filme compartilhado nesta lista.</p>";
-                return;
-            }
+    if (!idsString) {
+        container.innerHTML = "<p>Nenhum filme compartilhado nesta lista.</p>";
+        return;
+    }
 
-            const listaIds = idsString.split(',');
+    // Garante que os IDs sejam tratados corretamente como números ou strings limpas
+    const listaIds = idsString.split(',').map(id => id.trim()).filter(id => id !== "");
 
-            const { data, error } = await supabaseClient
-                .from("avaliacoes")
-                .select(`
-                    id,
-                    nota,
-                    comentario,
-                    filmes (
-                        titulo,
-                        ano,
-                        poster_url
-                    )
-                `)
-                .in("id", listaIds);
+    try {
+        // 1. Busca as avaliações pelos IDs passados na URL
+        const { data: avaliacoes, error: errorAvaliacoes } = await supabaseClient
+            .from("avaliacoes")
+            .select("id, filme_id, nota, comentario")
+            .in("id", listaIds);
 
-            if (error || !data.length) {
-                container.innerHTML = "<p>Erro ao carregar a lista ou os filmes não existem mais.</p>";
-                return;
-            }
+        if (errorAvaliacoes) throw errorAvaliacoes;
 
-            container.innerHTML = "";
-            data.forEach(item => {
-                const filme = item.filmes;
-                if (!filme) return;
-
-                const poster = filme.poster_url || "https://via.placeholder.com/300x450?text=Sem+Poster";
-                const card = document.createElement("article");
-                card.className = "filme-card";
-
-                card.innerHTML = `
-                    <img src="${poster}" alt="${filme.titulo}">
-                    <div class="filme-info">
-                        <h3>${filme.titulo}</h3>
-                        <p>${filme.ano || ""}</p>
-                        <p class="nota">⭐ ${item.nota}</p>
-                        ${item.comentario ? `<p class="comentario">"${item.comentario}"</p>` : ""}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+        if (!avaliacoes || avaliacoes.length === 0) {
+            container.innerHTML = "<p>Nenhuma avaliação correspondente encontrada.</p>";
+            return;
         }
 
+        // Coleta todos os filme_ids válidos salvos nessas avaliações
+        const filmeIds = avaliacoes.map(a => a.filme_id).filter(id => id !== null);
+
+        // 2. Busca os dados dos filmes na tabela "filmes"
+        const { data: filmes, error: errorFilmes } = await supabaseClient
+            .from("filmes")
+            .select("*")
+            .in("id", filmeIds);
+
+        if (errorFilmes) throw errorFilmes;
+
+        // Limpa o texto de carregamento
+        container.innerHTML = "";
+
+        // 3. Junta as avaliações com os seus respectivos filmes e renderiza
+        avaliacoes.forEach(item => {
+            // Procura as informações do filme correspondente ao filme_id da avaliação
+            const filme = filmes.find(f => String(f.id) === String(item.filme_id));
+            if (!filme) return;
+
+            // Altere 'poster_url' ou 'imagem_url' abaixo dependendo de como está na sua tabela "filmes"
+            const urlImagem = filme.poster_url || filme.imagem_url || "https://via.placeholder.com/300x450?text=Sem+Poster";
+            const card = document.createElement("article");
+            card.className = "filme-card";
+
+            card.innerHTML = `
+                <img src="${urlImagem}" alt="${filme.titulo || 'Filme'}">
+                <div class="filme-info">
+                    <h3>${filme.titulo || 'Título Indisponível'}</h3>
+                    <p>${filme.ano || ""}</p>
+                    <p class="nota">⭐ ${item.nota}</p>
+                    ${item.comentario ? `<p class="comentario">"${item.comentario}"</p>` : ""}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Se nenhum card conseguiu ser gerado
+        if (container.innerHTML === "") {
+            container.innerHTML = "<p>Os filmes indicados não foram encontrados no banco de dados.</p>";
+        }
+
+    } catch (error) {
+        console.error("Erro detalhado do Supabase:", error);
+        container.innerHTML = "<p>Erro ao carregar a lista. Verifique a conexão com o banco de dados.</p>";
+    }
+}
+
+// Executa o carregamento dos filmes
+carregarFilmesCompartilhados();
         // Executa o carregamento dos filmes
         carregarFilmesCompartilhados();
     </script>
