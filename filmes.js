@@ -126,20 +126,46 @@ if (busca) {
 }
 
 // ==========================================
-// COMPARTILHAR 
+// COMPARTILHAR (Mantendo seu sistema de IDs, corrigido para o GitHub)
 // ==========================================
 
 const compartilharBtn = document.getElementById("compartilharBtn");
 
 if (compartilharBtn) {
     compartilharBtn.addEventListener("click", async function() {
-        // Usamos o pathname para capturar a pasta correta do repositório no GitHub Pages automaticamente
-        const rascunhoPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        const linkCompartilhado = `${window.location.origin}${rascunhoPath}/compartilhado.html?user=${USUARIO_ID}`;
+        // Coleta os IDs de todas as avaliações que estão na tela
+        const botoesDeletar = document.querySelectorAll(".btn-deletar");
+        const ids = [];
+
+        botoesDeletar.forEach(botao => {
+            const match = botao.getAttribute("onclick").match(/'([^']+)'/);
+            if (match && match[1]) {
+                ids.push(match[1]);
+            }
+        });
+
+        if (ids.length === 0) {
+            alert("Você não tem nenhuma avaliação para compartilhar ainda! 🎬");
+            return;
+        }
+
+        const listaIds = ids.join(",");
+
+        // CORREÇÃO DA URL PARA O GITHUB PAGES:
+        // Pega a URL da barra de endereço e limpa o "index.html" ou parâmetros antigos
+        let urlBase = window.location.href.split('?')[0];
+        if (urlBase.endsWith('index.html')) {
+            urlBase = urlBase.replace('index.html', '');
+        }
+        if (!urlBase.endsWith('/')) {
+            urlBase += '/';
+        }
+
+        const linkCompartilhado = `${urlBase}compartilhado.html?ids=${listaIds}`;
 
         try {
             await navigator.clipboard.writeText(linkCompartilhado);
-            alert("🔗 Link copiado! Qualquer novo filme que você avaliar atualizará lá automaticamente.");
+            alert("Link de visualização copiado com sucesso! Envie para seus amigos. 🔗");
         } catch {
             prompt("Copie seu link de visualização abaixo:", linkCompartilhado);
         }
