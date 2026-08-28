@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -5,178 +6,477 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#111111">
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="./style.css">
+
     <title>CineBox - Avaliações Compartilhadas</title>
 </head>
 
 <body>
 
     <header class="header">
+
         <div class="logo">
             🎬 CineBox
         </div>
 
         <div class="pwa-instalacao" style="margin-bottom: 20px; display: flex; gap: 10px;">
-            <button id="btnInstalarVisualizador" style="display: none; background: #ffffff; color: #111;">
+
+            <button
+                id="btnInstalarVisualizador"
+                style="display: none; background: #ffffff; color: #111;">
                 📲 Baixar App
             </button>
+
         </div>
+
     </header>
 
+
     <main class="container">
+
         <section class="topo">
+
             <div>
+
                 <h2>Lista Compartilhada</h2>
-                <p>Confira estas indicações de filmes!</p>
+
+                <p>
+                    Confira estas indicações de filmes!
+                </p>
+
             </div>
+
         </section>
 
-        <!-- Container onde os filmes compartilhados vão aparecer -->
-        <section id="filmesCompartilhadosContainer" class="filmes-grid"></section>
+
+        <!-- Filmes compartilhados -->
+
+        <section
+            id="filmesCompartilhadosContainer"
+            class="filmes-grid">
+
+        </section>
+
     </main>
 
-    <!-- Scripts do Supabase e o script exclusivo desta tela -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
-    
-    <script>
-        // ==========================================
-        // GERE ADICIONAL DE INSTALAÇÃO DO PWA
-        // ==========================================
-        let deferredPrompt;
 
-        const btnEditor = document.getElementById('btnInstalarEditor');
-        const btnVisualizador = document.getElementById('btnInstalarVisualizador');
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="./supabase.js"></script>
+
+
+    <!-- ==========================================
+         PWA
+         ========================================== -->
+
+    <script>
+
+        let deferredPrompt = null;
+
+        const btnVisualizador =
+            document.getElementById("btnInstalarVisualizador");
+
 
         function checkDisplayMode() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-            || window.navigator.standalone
-            || document.referrer.includes('android-app://');
+
+            const isStandalone =
+                window.matchMedia("(display-mode: standalone)").matches ||
+                window.navigator.standalone ||
+                document.referrer.includes("android-app://");
+
 
             if (isStandalone) {
-                if (btnEditor) btnEditor.style.display = 'none';
-                if (btnVisualizador) btnVisualizador.style.display = 'none';
+
+                if (btnVisualizador) {
+                    btnVisualizador.style.display = "none";
+                }
+
             } else {
-                // No navegador, força os botões a aparecerem para o usuário poder baixar
-                if (btnEditor) btnEditor.style.display = 'inline-block';
-                if (btnVisualizador) btnVisualizador.style.display = 'inline-block';
+
+                if (btnVisualizador && deferredPrompt) {
+                    btnVisualizador.style.display = "inline-block";
+                }
+
             }
+
         }
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            checkDisplayMode(); // Garante a exibição correta assim que o prompt estiver pronto
-        });
 
-        if (btnEditor) {
-            btnEditor.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                if (btnEditor) btnEditor.style.display = 'none';
-                if (btnVisualizador) btnVisualizador.style.display = 'none';
-            });
-        }
+        window.addEventListener(
+            "beforeinstallprompt",
+            function (event) {
+
+                event.preventDefault();
+
+                deferredPrompt = event;
+
+                checkDisplayMode();
+
+            }
+        );
+
 
         if (btnVisualizador) {
-            btnVisualizador.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                if (btnEditor) btnEditor.style.display = 'none';
-                if (btnVisualizador) btnVisualizador.style.display = 'none';
-            });
+
+            btnVisualizador.addEventListener(
+                "click",
+                async function () {
+
+                    if (!deferredPrompt) {
+                        return;
+                    }
+
+                    deferredPrompt.prompt();
+
+                    const { outcome } =
+                        await deferredPrompt.userChoice;
+
+                    console.log(
+                        "Instalação:",
+                        outcome
+                    );
+
+                    deferredPrompt = null;
+
+                    btnVisualizador.style.display = "none";
+
+                }
+            );
+
         }
 
-        window.addEventListener('DOMContentLoaded', checkDisplayMode);
 
-      // ==========================================
-// CARREGAR FILMES COMPARTILHADOS (Versão Corrigida)
-// ==========================================
-async function carregarFilmesCompartilhados() {
-    const container = document.getElementById("filmesCompartilhadosContainer");
-    container.innerHTML = "<p>Carregando lista...</p>";
+        window.addEventListener(
+            "DOMContentLoaded",
+            checkDisplayMode
+        );
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const idsString = urlParams.get('ids');
-
-    if (!idsString) {
-        container.innerHTML = "<p>Nenhum filme compartilhado nesta lista.</p>";
-        return;
-    }
-
-    // Garante que os IDs sejam tratados corretamente como números ou strings limpas
-    const listaIds = idsString.split(',').map(id => id.trim()).filter(id => id !== "");
-
-    try {
-        // 1. Busca as avaliações pelos IDs passados na URL
-        const { data: avaliacoes, error: errorAvaliacoes } = await supabaseClient
-            .from("avaliacoes")
-            .select("id, filme_id, nota, comentario")
-            .in("id", listaIds);
-
-        if (errorAvaliacoes) throw errorAvaliacoes;
-
-        if (!avaliacoes || avaliacoes.length === 0) {
-            container.innerHTML = "<p>Nenhuma avaliação correspondente encontrada.</p>";
-            return;
-        }
-
-        // Coleta todos os filme_ids válidos salvos nessas avaliações
-        const filmeIds = avaliacoes.map(a => a.filme_id).filter(id => id !== null);
-
-        // 2. Busca os dados dos filmes na tabela "filmes"
-        const { data: filmes, error: errorFilmes } = await supabaseClient
-            .from("filmes")
-            .select("*")
-            .in("id", filmeIds);
-
-        if (errorFilmes) throw errorFilmes;
-
-        // Limpa o texto de carregamento
-        container.innerHTML = "";
-
-        // 3. Junta as avaliações com os seus respectivos filmes e renderiza
-        avaliacoes.forEach(item => {
-            // Procura as informações do filme correspondente ao filme_id da avaliação
-            const filme = filmes.find(f => String(f.id) === String(item.filme_id));
-            if (!filme) return;
-
-            // Altere 'poster_url' ou 'imagem_url' abaixo dependendo de como está na sua tabela "filmes"
-            const urlImagem = filme.poster_url || filme.imagem_url || "https://via.placeholder.com/300x450?text=Sem+Poster";
-            const card = document.createElement("article");
-            card.className = "filme-card";
-
-            card.innerHTML = `
-                <img src="${urlImagem}" alt="${filme.titulo || 'Filme'}">
-                <div class="filme-info">
-                    <h3>${filme.titulo || 'Título Indisponível'}</h3>
-                    <p>${filme.ano || ""}</p>
-                    <p class="nota">⭐ ${item.nota}</p>
-                    ${item.comentario ? `<p class="comentario">"${item.comentario}"</p>` : ""}
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        // Se nenhum card conseguiu ser gerado
-        if (container.innerHTML === "") {
-            container.innerHTML = "<p>Os filmes indicados não foram encontrados no banco de dados.</p>";
-        }
-
-    } catch (error) {
-        console.error("Erro detalhado do Supabase:", error);
-        container.innerHTML = "<p>Erro ao carregar a lista. Verifique a conexão com o banco de dados.</p>";
-    }
-}
-
-// Executa o carregamento dos filmes
-carregarFilmesCompartilhados();
-        // Executa o carregamento dos filmes
-        carregarFilmesCompartilhados();
     </script>
+
+
+    <!-- ==========================================
+         CARREGAR FILMES COMPARTILHADOS
+         ========================================== -->
+
+    <script>
+
+        async function carregarFilmesCompartilhados() {
+
+            const container =
+                document.getElementById(
+                    "filmesCompartilhadosContainer"
+                );
+
+
+            if (!container) {
+                console.error(
+                    "Container de filmes não encontrado."
+                );
+                return;
+            }
+
+
+            container.innerHTML =
+                "<p>Carregando lista...</p>";
+
+
+            // Pega os IDs da URL
+
+            const urlParams =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            const idsString =
+                urlParams.get("ids");
+
+
+            // Se não tiver IDs
+
+            if (!idsString) {
+
+                container.innerHTML =
+                    "<p>Nenhum filme compartilhado nesta lista.</p>";
+
+                return;
+
+            }
+
+
+            // Exemplo:
+            // ?ids=4,2,1
+
+            const listaIds =
+                idsString
+                    .split(",")
+                    .map(id => id.trim())
+                    .filter(id => id !== "");
+
+
+            if (listaIds.length === 0) {
+
+                container.innerHTML =
+                    "<p>Nenhum filme válido foi encontrado.</p>";
+
+                return;
+
+            }
+
+
+            try {
+
+                console.log(
+                    "IDs recebidos:",
+                    listaIds
+                );
+
+
+                // ==========================================
+                // 1. BUSCAR AVALIAÇÕES
+                // ==========================================
+
+                const {
+                    data: avaliacoes,
+                    error: errorAvaliacoes
+                } = await supabaseClient
+
+                    .from("avaliacoes")
+
+                    .select(
+                        "id, filme_id, nota, comentario"
+                    )
+
+                    .in(
+                        "id",
+                        listaIds
+                    );
+
+
+                if (errorAvaliacoes) {
+                    throw errorAvaliacoes;
+                }
+
+
+                console.log(
+                    "Avaliações encontradas:",
+                    avaliacoes
+                );
+
+
+                if (
+                    !avaliacoes ||
+                    avaliacoes.length === 0
+                ) {
+
+                    container.innerHTML =
+                        "<p>Nenhuma avaliação correspondente foi encontrada.</p>";
+
+                    return;
+
+                }
+
+
+                // ==========================================
+                // 2. PEGAR OS IDs DOS FILMES
+                // ==========================================
+
+                const filmeIds =
+                    avaliacoes
+
+                        .map(
+                            avaliacao =>
+                                avaliacao.filme_id
+                        )
+
+                        .filter(
+                            id =>
+                                id !== null &&
+                                id !== undefined
+                        );
+
+
+                if (filmeIds.length === 0) {
+
+                    container.innerHTML =
+                        "<p>As avaliações não possuem filmes associados.</p>";
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "IDs dos filmes:",
+                    filmeIds
+                );
+
+
+                // ==========================================
+                // 3. BUSCAR FILMES
+                // ==========================================
+
+                const {
+                    data: filmes,
+                    error: errorFilmes
+                } = await supabaseClient
+
+                    .from("filmes")
+
+                    .select("*")
+
+                    .in(
+                        "id",
+                        filmeIds
+                    );
+
+
+                if (errorFilmes) {
+                    throw errorFilmes;
+                }
+
+
+                console.log(
+                    "Filmes encontrados:",
+                    filmes
+                );
+
+
+                container.innerHTML = "";
+
+
+                // ==========================================
+                // 4. CRIAR CARDS
+                // ==========================================
+
+                avaliacoes.forEach(
+                    function (item) {
+
+                        const filme =
+                            filmes.find(
+                                function (f) {
+
+                                    return String(f.id) ===
+                                        String(item.filme_id);
+
+                                }
+                            );
+
+
+                        if (!filme) {
+                            return;
+                        }
+
+
+                        // Tenta encontrar a imagem
+
+                        const urlImagem =
+                            filme.poster_url ||
+                            filme.imagem_url ||
+                            filme.poster ||
+                            "https://via.placeholder.com/300x450?text=Sem+Poster";
+
+
+                        // Cria card
+
+                        const card =
+                            document.createElement(
+                                "article"
+                            );
+
+
+                        card.className =
+                            "filme-card";
+
+
+                        card.innerHTML = `
+
+                            <img
+                                src="${urlImagem}"
+                                alt="${filme.titulo || "Filme"}"
+                                onerror="this.src='https://via.placeholder.com/300x450?text=Sem+Poster'"
+                            >
+
+                            <div class="filme-info">
+
+                                <h3>
+                                    ${filme.titulo || "Título Indisponível"}
+                                </h3>
+
+                                ${
+                                    filme.ano
+                                        ? `<p>${filme.ano}</p>`
+                                        : ""
+                                }
+
+                                <p class="nota">
+                                    ⭐ ${item.nota}
+                                </p>
+
+                                ${
+                                    item.comentario
+                                        ? `
+                                            <p class="comentario">
+                                                "${item.comentario}"
+                                            </p>
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+
+                        `;
+
+
+                        container.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+
+                // ==========================================
+                // 5. NENHUM CARD GERADO
+                // ==========================================
+
+                if (
+                    container.children.length === 0
+                ) {
+
+                    container.innerHTML =
+                        "<p>Os filmes indicados não foram encontrados no banco de dados.</p>";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro detalhado do Supabase:",
+                    error
+                );
+
+
+                container.innerHTML =
+                    "<p>Erro ao carregar a lista. Verifique a conexão com o banco de dados.</p>";
+
+            }
+
+        }
+
+
+        // Executa UMA vez
+
+        carregarFilmesCompartilhados();
+
+    </script>
+
 </body>
+
 </html>
+```
