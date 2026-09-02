@@ -126,13 +126,12 @@ if (busca) {
 }
 
 // ==========================================
-// COMPARTILHAR (Versão Corrigida para manter o /cinebox/)
+// COMPARTILHAR 
 // ==========================================
 const compartilharBtn = document.getElementById("compartilharBtn");
 
 if (compartilharBtn) {
     compartilharBtn.addEventListener("click", async function() {
-        // Coleta os IDs de todas as avaliações que estão na tela
         const botoesDeletar = document.querySelectorAll(".btn-deletar");
         const ids = [];
 
@@ -149,21 +148,14 @@ if (compartilharBtn) {
         }
 
         const listaIds = ids.join(",");
-
-        // CORREÇÃO DEFINITIVA DA URL:
-        // Captura o caminho atual (ex: /cinebox/ ou /cinebox/index.html)
         let caminhoAtual = window.location.pathname;
         
-        // Se terminar com index.html, remove apenas o index.html, mantendo a pasta /cinebox/
         if (caminhoAtual.endsWith('index.html')) {
             caminhoAtual = caminhoAtual.replace('index.html', '');
         }
-        // Garante que termina com uma barra
         if (!caminhoAtual.endsWith('/')) {
             caminhoAtual += '/';
         }
-
-        // Monta o link juntando o domínio original + a pasta correta + o arquivo
         const linkCompartilhado = `${window.location.origin}${caminhoAtual}compartilhado.html?ids=${listaIds}`;
 
         try {
@@ -267,8 +259,6 @@ if (btnEditor) {
         console.log(`Escolha do usuário (Editor): ${outcome}`);
 
         deferredPrompt = null;
-
-        // Esconde os botões após a ação
         if (btnEditor) btnEditor.style.display = 'none';
         if (btnVisualizador) btnVisualizador.style.display = 'none';
     });
