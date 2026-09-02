@@ -10,7 +10,8 @@ const FILES = [
     "./filmes.js",
     "./avaliar.js",
     "./perfil.js",
-    "./manifest.json"
+    "./manifest.json",
+    "./icon.png"
 ];
 
 self.addEventListener("install", event => {
