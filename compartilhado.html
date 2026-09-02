@@ -49,8 +49,6 @@
         </section>
 
 
-        <!-- Filmes compartilhados -->
-
         <section
             id="filmesCompartilhadosContainer"
             class="filmes-grid">
@@ -59,19 +57,9 @@
 
     </main>
 
-
-    <!-- ==========================================
-         SUPABASE
-         ========================================== -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="./supabase.js"></script>
-
-
-    <!-- ==========================================
-         PWA
-         ========================================== -->
 
     <script>
 
@@ -157,11 +145,6 @@
 
     </script>
 
-
-    <!-- ==========================================
-         CARREGAR FILMES COMPARTILHADOS
-         ========================================== -->
-
     <script>
 
         async function carregarFilmesCompartilhados() {
@@ -184,7 +167,6 @@
                 "<p>Carregando lista...</p>";
 
 
-            // Pega os IDs da URL
 
             const urlParams =
                 new URLSearchParams(
@@ -195,7 +177,6 @@
                 urlParams.get("ids");
 
 
-            // Se não tiver IDs
 
             if (!idsString) {
 
@@ -206,9 +187,6 @@
 
             }
 
-
-            // Exemplo:
-            // ?ids=4,2,1
 
             const listaIds =
                 idsString
@@ -234,10 +212,6 @@
                     listaIds
                 );
 
-
-                // ==========================================
-                // 1. BUSCAR AVALIAÇÕES
-                // ==========================================
 
                 const {
                     data: avaliacoes,
@@ -280,10 +254,6 @@
                 }
 
 
-                // ==========================================
-                // 2. PEGAR OS IDs DOS FILMES
-                // ==========================================
-
                 const filmeIds =
                     avaliacoes
 
@@ -314,11 +284,6 @@
                     filmeIds
                 );
 
-
-                // ==========================================
-                // 3. BUSCAR FILMES
-                // ==========================================
-
                 const {
                     data: filmes,
                     error: errorFilmes
@@ -348,10 +313,6 @@
                 container.innerHTML = "";
 
 
-                // ==========================================
-                // 4. CRIAR CARDS
-                // ==========================================
-
                 avaliacoes.forEach(
                     function (item) {
 
@@ -371,7 +332,7 @@
                         }
 
 
-                        // Tenta encontrar a imagem
+
 
                         const urlImagem =
                             filme.poster_url ||
@@ -380,7 +341,6 @@
                             "https://via.placeholder.com/300x450?text=Sem+Poster";
 
 
-                        // Cria card
 
                         const card =
                             document.createElement(
@@ -439,10 +399,6 @@
                 );
 
 
-                // ==========================================
-                // 5. NENHUM CARD GERADO
-                // ==========================================
-
                 if (
                     container.children.length === 0
                 ) {
@@ -469,7 +425,6 @@
         }
 
 
-        // Executa UMA vez
         carregarFilmesCompartilhados()
         
         if ('serviceWorker' in navigator) {
