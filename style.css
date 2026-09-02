@@ -1,6 +1,4 @@
-/* ==========================================================================
-   CONFIGURAÇÕES GERAIS E VARIÁVEIS
-   ========================================================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -32,7 +30,7 @@ body {
 }
 
 /* ==========================================================================
-   HEADER (LAYOUT GLASSMORPHISM)
+   HEADER
    ========================================================================== */
 .header {
     background: var(--bg-header);
@@ -96,7 +94,6 @@ button, .botao {
     text-decoration: none;
 }
 
-/* Botão Amarelo Principal */
 .botao, #btnInstalarEditor {
     background-color: var(--cor-primaria);
     color: #000000 !important;
@@ -108,7 +105,6 @@ button, .botao {
     box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
 }
 
-/* Botão Compartilhar */
 #compartilharBtn {
     background: rgba(255, 255, 255, 0.05);
     color: var(--texto-principal);
@@ -120,7 +116,6 @@ button, .botao {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Botão Visualizador (PWA Branco) */
 #btnInstalarVisualizador {
     background-color: #ffffff;
     color: #000000;
@@ -131,10 +126,8 @@ button, .botao {
     transform: translateY(-2px);
 }
 
-/* Container de Instalação do PWA */
 .pwa-instalacao {
-    margin-bottom: 0 !important; /* Ajuste para alinhar perfeitamente no header */
-}
+    margin-bottom: 0 !important;
 
 /* ==========================================================================
    LAYOUT E ESTRUTURA PRINCIPAL
@@ -165,7 +158,7 @@ button, .botao {
     font-size: 1rem;
 }
 
-/* Barra de Busca */
+
 .busca {
     margin-bottom: 3rem;
     position: relative;
@@ -190,7 +183,7 @@ button, .botao {
 }
 
 /* ==========================================================================
-   GRID DE FILMES E CARDS (DESIGN PREMIUM)
+   GRID DE FILMES E CARDS 
    ========================================================================== */
 .filmes-grid {
     display: grid;
@@ -215,7 +208,7 @@ button, .botao {
     box-shadow: var(--sombra);
 }
 
-/* Poster de Filme */
+
 .filme-card img {
     width: 100%;
     height: 340px;
@@ -228,7 +221,6 @@ button, .botao {
     filter: brightness(1.05);
 }
 
-/* Conteúdo do Card */
 .filme-info {
     padding: 1.25rem;
     display: flex;
@@ -250,7 +242,7 @@ button, .botao {
     margin-bottom: 0.75rem;
 }
 
-/* Badge de Nota Estilizada */
+
 .filme-info .nota {
     font-size: 0.9rem;
     font-weight: 700;
@@ -262,7 +254,6 @@ button, .botao {
     margin-bottom: 0.75rem;
 }
 
-/* Balão de Comentário */
 .filme-info .comentario {
     font-size: 0.9rem;
     color: #e2e8f0;
@@ -275,7 +266,6 @@ button, .botao {
     line-height: 1.5;
 }
 
-/* Container de Ações (Editar/Deletar) no Card */
 .filme-acoes {
     display: flex;
     gap: 0.5rem;
@@ -306,7 +296,7 @@ button, .botao {
 }
 
 /* ==========================================================================
-   MODAL DE EDIÇÃO MODERNO
+   MODAL DE EDIÇÃO
    ========================================================================== */
 .modal {
     position: fixed;
